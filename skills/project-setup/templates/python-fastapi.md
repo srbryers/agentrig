@@ -277,3 +277,11 @@ Output findings as a table: | Severity | File | Line | Issue | Fix |
   }
 }
 ```
+
+## external_skills
+
+| Name | Repository | Skill | Description |
+|------|-----------|-------|-------------|
+| API Design Principles | wshobson/agents | api-design-principles | RESTful API design patterns and conventions |
+| Python Testing Patterns | wshobson/agents | python-testing-patterns | Python testing best practices with pytest |
+| FastAPI Templates | wshobson/agents | fastapi-templates | FastAPI project templates and patterns |

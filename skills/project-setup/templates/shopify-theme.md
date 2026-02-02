@@ -200,3 +200,10 @@ Output findings as a table: | Severity | File | Line | Issue | Fix |
   }
 }
 ```
+
+## external_skills
+
+| Name | Repository | Skill | Description |
+|------|-----------|-------|-------------|
+| Web Design Guidelines | vercel-labs/agent-skills | web-design-guidelines | Web design best practices and visual guidelines |
+| Frontend Design | anthropics/skills | frontend-design | Frontend design patterns and UI implementation |

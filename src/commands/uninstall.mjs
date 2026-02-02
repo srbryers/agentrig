@@ -1,14 +1,25 @@
+import { join } from "node:path";
 import { rm } from "node:fs/promises";
-import { getTargetDir, dirExists } from "../utils.mjs";
+import { getSkillsDir, dirExists } from "../utils.mjs";
+
+const MANAGED_SKILLS = ["project-setup", "find-skills"];
 
 export async function uninstall() {
-  const target = getTargetDir();
+  const skillsDir = getSkillsDir();
+  let removed = 0;
 
-  if (!(await dirExists(target))) {
-    console.log("Skill is not installed.");
-    return;
+  for (const name of MANAGED_SKILLS) {
+    const target = join(skillsDir, name);
+    if (await dirExists(target)) {
+      await rm(target, { recursive: true, force: true });
+      console.log(`Removed ${target}`);
+      removed++;
+    }
   }
 
-  await rm(target, { recursive: true, force: true });
-  console.log(`Removed ${target}`);
+  if (removed === 0) {
+    console.log("No agent-rig skills are installed.");
+  } else {
+    console.log(`\nRemoved ${removed} skill(s).`);
+  }
 }

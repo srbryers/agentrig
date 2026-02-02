@@ -165,4 +165,13 @@ export async function init(flags) {
   }
   console.log("\nNext steps:");
   steps.forEach((s, i) => console.log(`  ${i + 1}. ${s}`));
+
+  // Print external skill recommendations
+  if (template.external_skills && template.external_skills.length > 0) {
+    console.log("\nRecommended community skills:");
+    for (const skill of template.external_skills) {
+      console.log(`  ${skill.name} — npx skills add ${skill.repository} --skill ${skill.skill}`);
+    }
+    console.log("\nBrowse more at https://skills.sh");
+  }
 }

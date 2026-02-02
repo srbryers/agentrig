@@ -3,6 +3,7 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { stat, cp, readdir, mkdir, writeFile, readFile } from "node:fs/promises";
 import { createInterface } from "node:readline";
+import { execFile } from "node:child_process";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -16,6 +17,10 @@ export function getTargetDir() {
 
 export function getPackageSkillsDir() {
   return join(__dirname, "..", "skills", "project-setup");
+}
+
+export function getPackageBundledDir() {
+  return join(__dirname, "..", "skills");
 }
 
 export async function copyDir(src, dest) {
@@ -125,4 +130,20 @@ export function mergeMcpJson(existing, newServers) {
   }
 
   return JSON.stringify(mcp, null, 2);
+}
+
+export function execCommand(command, args, options = {}) {
+  return new Promise((resolve) => {
+    execFile(command, args, {
+      timeout: options.timeout || 30000,
+      maxBuffer: 1024 * 1024,
+      shell: true,
+    }, (error, stdout, stderr) => {
+      resolve({
+        exitCode: error ? (error.code ?? 1) : 0,
+        stdout: stdout?.toString() || "",
+        stderr: stderr?.toString() || "",
+      });
+    });
+  });
 }

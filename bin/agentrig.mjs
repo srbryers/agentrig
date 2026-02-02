@@ -21,6 +21,7 @@ const flags = {
       })()
     : undefined,
   templateId: command === "init" ? nonFlagArgs[1] : undefined,
+  query: command === "discover" ? nonFlagArgs[1] : undefined,
 };
 
 async function printVersion() {
@@ -38,10 +39,11 @@ Usage:
   agentrig <command> [options]
 
 Commands:
-  install              Copy skill files to ~/.claude/skills/project-setup/
+  install              Copy skill files to ~/.claude/skills/
   uninstall            Remove installed skill files
   status               Show installation status
   init <template>      Generate Claude Code config from a project-type template
+  discover [query]     Search for community skills
 
 Init Options:
   --list               List available templates
@@ -85,6 +87,11 @@ switch (command) {
   case "init": {
     const { init } = await import("../src/commands/init.mjs");
     await init(flags);
+    break;
+  }
+  case "discover": {
+    const { discover } = await import("../src/commands/discover.mjs");
+    await discover(flags.query);
     break;
   }
   default:

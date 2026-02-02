@@ -103,6 +103,7 @@ export function parseTemplateContent(content) {
     skills: sections.skills || {},
     agents: sections.agents || {},
     mcp_servers: sections.mcp_servers || {},
+    external_skills: sections.external_skills || [],
   };
 }
 
@@ -285,6 +286,7 @@ function extractSections(body) {
     skills: {},
     agents: {},
     mcp_servers: {},
+    external_skills: [],
   };
 
   const sectionStarts = findTopLevelSections(body);
@@ -319,6 +321,10 @@ function extractSections(body) {
 
       case "mcp_servers":
         result.mcp_servers = extractJsonBlock(content) || {};
+        break;
+
+      case "external_skills":
+        result.external_skills = parseExternalSkillsTable(content);
         break;
     }
   }
@@ -398,6 +404,51 @@ function extractNamedSubsections(content) {
   }
 
   return result;
+}
+
+/**
+ * Parse a markdown table of external skills into structured data.
+ * Format: | Name | Repository | Skill | Description |
+ * Returns [{name, repository, skill, description}]
+ */
+function parseExternalSkillsTable(content) {
+  const lines = content.split("\n");
+  const skills = [];
+  let inTable = false;
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed.startsWith("|")) continue;
+
+    const cells = trimmed
+      .split("|")
+      .map((c) => c.trim())
+      .filter((c) => c.length > 0);
+
+    if (cells.length < 4) continue;
+
+    // Skip header row
+    if (cells[0].toLowerCase() === "name") {
+      inTable = true;
+      continue;
+    }
+
+    // Skip separator row
+    if (cells[0].startsWith("-")) {
+      continue;
+    }
+
+    if (inTable) {
+      skills.push({
+        name: cells[0],
+        repository: cells[1],
+        skill: cells[2],
+        description: cells[3],
+      });
+    }
+  }
+
+  return skills;
 }
 
 /**

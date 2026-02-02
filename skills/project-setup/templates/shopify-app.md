@@ -258,3 +258,10 @@ Output findings as a table: | Severity | File | Line | Issue | Fix |
   }
 }
 ```
+
+## external_skills
+
+| Name | Repository | Skill | Description |
+|------|-----------|-------|-------------|
+| React Best Practices | vercel-labs/agent-skills | vercel-react-best-practices | React patterns and best practices from Vercel |
+| Web Design Guidelines | vercel-labs/agent-skills | web-design-guidelines | Web design best practices and visual guidelines |

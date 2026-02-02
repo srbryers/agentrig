@@ -247,3 +247,34 @@ Template-sourced items use `[T]` prefix IDs in the Phase 2 report:
 - `TM1`, `TM2`, ... — MCP servers from template
 
 Users can skip or modify template items using these IDs, the same as any other recommendation.
+
+---
+
+## 10. External Skill Discovery Heuristics
+
+External skills are community-authored Claude Code skills available via the `npx skills` CLI and the skills.sh registry. During Phase 1, discover relevant skills by mapping detected frameworks to search queries.
+
+### Framework-to-Query Mapping
+
+| Detected Framework | Search Queries |
+|-------------------|----------------|
+| React / Next.js | `react`, `nextjs` |
+| Vue / Nuxt | `vue`, `nuxt` |
+| Shopify | `shopify` |
+| Python / FastAPI | `fastapi`, `python api` |
+| Django | `django` |
+| TypeScript | `typescript` |
+| Tailwind | `tailwind` |
+| Svelte / SvelteKit | `svelte` |
+| Go / Gin / Echo | `golang` |
+| Rust | `rust` |
+
+### Discovery Rules
+
+1. **Max 3 queries** — Select the most specific queries first (e.g., `fastapi` before `python api`). Stop after 3 queries to limit latency.
+2. **Dedup by repository** — If the same repository appears in multiple query results, keep only one entry.
+3. **Exclude overlaps with template skills** — If a template matched and has `external_skills`, skip any discovered skills that share the same repository + skill name.
+4. **Limit to top 5** — After dedup and filtering, keep the 5 most relevant results (prefer higher install counts).
+5. **Fall back on failure** — If `npx skills find` fails (timeout, npx unavailable, network error), use the template's `external_skills` list as the E# items in Phase 2.
+6. **Source tagging** — Tag each E# item with its source: `[D]` for discovered via `npx skills find`, `[T]` for from the template's `external_skills` list.
+7. **No blocking** — Discovery failures must not prevent the rest of Phase 1 from completing. Treat discovery as best-effort.

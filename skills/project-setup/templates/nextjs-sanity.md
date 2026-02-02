@@ -278,3 +278,11 @@ Output findings as a table: | Severity | File | Line | Issue | Fix |
   }
 }
 ```
+
+## external_skills
+
+| Name | Repository | Skill | Description |
+|------|-----------|-------|-------------|
+| Next.js Best Practices | vercel-labs/next-skills | next-best-practices | Next.js patterns, App Router, and performance |
+| React Best Practices | vercel-labs/agent-skills | vercel-react-best-practices | React patterns and best practices from Vercel |
+| Web Design Guidelines | vercel-labs/agent-skills | web-design-guidelines | Web design best practices and visual guidelines |

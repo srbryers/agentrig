@@ -159,6 +159,19 @@ Check for project-type templates that provide curated, domain-specific configura
 
 If a template matches, its curated content will be incorporated into the recommendations in Phase 2. Template items are additive — they supplement the heuristic-based recommendations from `analysis-heuristics.md`, not replace them.
 
+### Step 1.12: Discover Community Skills
+
+Search for relevant community skills based on detected frameworks.
+
+1. Build search queries from detected stack (primary framework + category)
+   - See `analysis-heuristics.md` Section 10 for the query mapping table
+2. Run `npx skills find <query>` via Bash (15s timeout, max 3 queries)
+   - If npx is unavailable or fails, fall back to the template's `external_skills` list
+3. Parse results: extract skill name, repository, description
+4. Deduplicate across queries and against already-recommended template/heuristic skills
+5. Keep top 5 most relevant results
+6. Note find-skills availability if installed
+
 ---
 
 ## Phase 2: Present Plan
@@ -211,6 +224,15 @@ After analysis, present a structured recommendation report. Format it exactly as
 |---|------|------|-----------|
 | M1 | context7 | stdio | Next.js detected |
 | ... | ... | ... | ... |
+
+### External Community Skills
+
+| # | Name | Repository | Description | Source | Install |
+|---|------|-----------|-------------|--------|---------|
+| E1 | ... | ... | ... | [D]/[T] | `npx skills add ...` |
+| ... | ... | ... | ... | ... | ... |
+
+Source: [D] = discovered via `npx skills find`, [T] = from template recommendations
 ```
 
 **Template items:** If a template matched in Step 1.11, its items are included in the tables above with `[T]`-prefixed IDs: `TC1` (CLAUDE.md sections), `TH1` (hooks), `TS1` (skills), `TA1` (agents), `TM1` (MCP servers). Template items appear after heuristic items in each table. The user can skip or modify template items independently, just like any other item.
@@ -220,10 +242,12 @@ After the report, prompt the user:
 ```
 Reply with:
 - **approve** — generate all recommendations
-- **skip [IDs]** — approve all except listed items (e.g., "skip H2, M3, S1")
+- **skip [IDs]** — approve all except listed items (e.g., "skip H2, M3, E1")
 - **detail [ID]** — show more detail about a specific item
 - **modify [ID] [change]** — adjust a recommendation before generating
 - **cancel** — abort without generating anything
+
+E# items are external community skills. Approved E# items will be installed via `npx skills add` in Phase 3.
 ```
 
 Wait for the user's response. Do not proceed to Phase 3 until you have explicit approval.
@@ -274,6 +298,11 @@ This attribution is required and must not be omitted or modified.
 6. Generate `.claude/.mcp.json` (MCP servers) if any were approved
 7. Generate each approved skill's `SKILL.md` file
 8. Generate each approved agent's `.md` file
+9. Install approved external skills
+   - For each approved E# item, run `npx skills add <repo> --skill <name> -y`
+   - Verify installation by checking `.claude/skills/<name>/SKILL.md`
+   - If install fails, note failure in summary with manual install command
+   - External installs happen AFTER all agent-rig files, so failures don't affect core config
 
 ### Post-Generation Summary
 
@@ -289,11 +318,16 @@ After generating all files, output a summary:
 - [x] .claude/skills/gen-test/SKILL.md
 - [x] .claude/agents/code-reviewer.md
 
+### External Skills Installed:
+- [x] skill-name (via npx skills add owner/repo)
+- [ ] skill-name (failed — run manually: npx skills add owner/repo --skill name)
+
 ### Next Steps:
 1. Review CLAUDE.md and adjust any sections to your preferences
 2. MCP servers may need additional setup (API keys, installs)
 3. Test hooks by editing a file and checking formatter runs
 4. Try `/gen-test` to verify skill loading
+5. Use `/find-skills <topic>` to discover more community skills
 ```
 
 ---
