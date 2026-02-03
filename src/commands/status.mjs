@@ -1,11 +1,12 @@
 import { join } from "node:path";
 import { readdir } from "node:fs/promises";
-import { getSkillsDir, getPackageBundledDir, dirExists, listFiles } from "../utils.mjs";
+import { resolveProjectRoot, getSkillsDir, getPackageBundledDir, dirExists, listFiles } from "../utils.mjs";
 import { getAllTemplateScores, formatScoreDisplay } from "../scoring.mjs";
 import { loadAllFeedback } from "../feedback.mjs";
 
-export async function status() {
-  const skillsDir = getSkillsDir();
+export async function status(flags) {
+  const projectRoot = resolveProjectRoot(flags);
+  const skillsDir = getSkillsDir(projectRoot);
   const bundledDir = getPackageBundledDir();
 
   // Get all bundled skills
@@ -70,7 +71,7 @@ export async function status() {
 
   // Report template quality tiers from feedback data
   try {
-    const scores = await getAllTemplateScores();
+    const scores = await getAllTemplateScores(projectRoot);
     if (scores.size > 0) {
       console.log("\nTemplate Quality:");
       for (const [tid, score] of scores) {
@@ -79,7 +80,7 @@ export async function status() {
     }
 
     // Report feedback session count
-    const records = await loadAllFeedback();
+    const records = await loadAllFeedback(projectRoot);
     if (records.length > 0) {
       console.log(`\nFeedback sessions: ${records.length}`);
     }

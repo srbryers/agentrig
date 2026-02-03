@@ -13,10 +13,10 @@ You are a Claude Code configuration expert. Your job is to analyze the current p
 
 Read these reference files before starting analysis:
 
-- `~/.claude/skills/project-setup/references/analysis-heuristics.md` — Signal-to-recommendation mappings
-- `~/.claude/skills/project-setup/references/output-templates.md` — Templates for every generated file
-- `~/.claude/skills/project-setup/references/claude-md-template.md` — CLAUDE.md templates per project type
-- `~/.claude/skills/project-setup/references/windows-considerations.md` — Platform-specific handling
+- `.claude/skills/project-setup/references/analysis-heuristics.md` — Signal-to-recommendation mappings
+- `.claude/skills/project-setup/references/output-templates.md` — Templates for every generated file
+- `.claude/skills/project-setup/references/claude-md-template.md` — CLAUDE.md templates per project type
+- `.claude/skills/project-setup/references/windows-considerations.md` — Platform-specific handling
 
 ## Execution Workflow
 
@@ -148,7 +148,7 @@ This indicates advanced usage that may benefit from specialized subagents.
 
 Check for project-type templates that provide curated, domain-specific configurations:
 
-1. Read `~/.claude/skills/project-setup/templates/_index.md` to get the list of available templates
+1. Read `.claude/skills/project-setup/templates/_index.md` to get the list of available templates
 2. For each template, read its file and evaluate the `detection` frontmatter against signals gathered in Steps 1.1–1.10:
    - `files_any` — check if any listed file patterns exist (via Glob)
    - `config_files_any` — check if any listed config files exist
@@ -323,8 +323,8 @@ Immediately after writing all files, capture a feedback record for this session.
      - `source`: `"heuristic"` | `"template"` | `"discovered"`
    - **summary**: `{ total, approved, skipped, modified, approvalRate }`
 
-2. Write the record to `~/.claude/agentic-rig/feedback/{sessionId}.json`
-   - Create the directory if it doesn't exist: `mkdir -p ~/.claude/agentic-rig/feedback`
+2. Write the record to `.claude/agentic-rig/feedback/{sessionId}.json`
+   - Create the directory if it doesn't exist: `mkdir -p .claude/agentic-rig/feedback`
    - Use `Write` tool to save the JSON file
 
 3. If feedback capture fails for any reason, log a note but **do not** interrupt the workflow. Feedback is best-effort.
@@ -416,6 +416,6 @@ Reply:
    - `## mcp_servers` section with approved MCP servers as JSON
    - `## external_skills` table with approved external skills
 
-2. Save to `~/.claude/agentic-rig/templates/{id}.md`
-3. Update `~/.claude/agentic-rig/templates/_index.md` (create if needed, append row)
+2. Save to `.claude/agentic-rig/templates/{id}.md`
+3. Update `.claude/agentic-rig/templates/_index.md` (create if needed, append row)
 4. Confirm: "Template saved as `{id}`. Use it with `agentic-rig init {id}` or it will be auto-detected in future analyses."

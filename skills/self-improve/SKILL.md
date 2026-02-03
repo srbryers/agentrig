@@ -13,8 +13,8 @@ You are an agentic-rig improvement specialist. Your job is to analyze agentic-ri
 
 This skill operates on agentic-rig itself — the CLI tool that generates Claude Code configurations. You have access to:
 - The agentic-rig source code (current working directory should be the agentic-rig repo)
-- Feedback data from past analyses stored in `~/.claude/agentic-rig/feedback/`
-- User-generated templates in `~/.claude/agentic-rig/templates/`
+- Feedback data from past analyses stored in `.claude/agentic-rig/feedback/`
+- User-generated templates in `.claude/agentic-rig/templates/`
 
 ## Execution Workflow
 
@@ -26,7 +26,7 @@ Execute in three phases. Do not skip or combine phases.
 
 ### Step 1.1: Load Feedback Data
 
-Read all feedback JSON files from `~/.claude/agentic-rig/feedback/`:
+Read all feedback JSON files from `.claude/agentic-rig/feedback/`:
 - Count total sessions
 - Calculate overall approval rate
 - Identify most/least approved heuristic keys
@@ -50,7 +50,7 @@ For each template used:
 
 ### Step 1.4: Scan Current Heuristics
 
-Read `~/.claude/skills/project-setup/references/analysis-heuristics.md`:
+Read `.claude/skills/project-setup/references/analysis-heuristics.md`:
 - List all signal-to-recommendation mappings
 - Cross-reference with feedback data
 - Identify heuristics with no feedback data (untested)

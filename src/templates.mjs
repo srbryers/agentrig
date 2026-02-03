@@ -1,7 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { homedir } from "node:os";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -13,10 +12,10 @@ export function getTemplatesDir() {
 }
 
 /**
- * Returns the path to the user templates directory.
+ * Returns the path to the user templates directory for a project.
  */
-export function getUserTemplatesDir() {
-  return join(homedir(), ".claude", "agentic-rig", "templates");
+export function getUserTemplatesDir(projectRoot) {
+  return join(projectRoot, ".claude", "agentic-rig", "templates");
 }
 
 /**
@@ -24,14 +23,14 @@ export function getUserTemplatesDir() {
  * Searches both bundled and user template directories.
  * Returns [{id, name, description, file, source}]
  */
-export async function listTemplates(templatesDir) {
+export async function listTemplates(templatesDir, projectRoot) {
   const bundledDir = templatesDir || getTemplatesDir();
 
   // Load bundled templates
   const bundled = await listTemplatesFromDir(bundledDir, "bundled");
 
   // Load user templates
-  const userDir = getUserTemplatesDir();
+  const userDir = getUserTemplatesDir(projectRoot);
   const user = await listTemplatesFromDir(userDir, "user");
 
   // Merge: user templates supplement bundled, but bundled take precedence on ID collision
@@ -491,8 +490,8 @@ function parseExternalSkillsTable(content) {
  * Find a template by ID from available templates.
  * Searches both bundled and user template directories.
  */
-export async function findTemplate(templateId, templatesDir) {
-  const templates = await listTemplates(templatesDir);
+export async function findTemplate(templateId, templatesDir, projectRoot) {
+  const templates = await listTemplates(templatesDir, projectRoot);
   const entry = templates.find((t) => t.id === templateId);
   if (!entry) return null;
   const dir = entry._dir || templatesDir || getTemplatesDir();

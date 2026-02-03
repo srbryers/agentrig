@@ -1,16 +1,7 @@
-import { homedir } from "node:os";
 import { join } from "node:path";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import { readFileIfExists, writeFileWithDir } from "./utils.mjs";
-
-const USER_TEMPLATES_DIR = join(homedir(), ".claude", "agentic-rig", "templates");
-
-/**
- * Returns the user templates directory path.
- */
-export function getUserTemplatesDir() {
-  return USER_TEMPLATES_DIR;
-}
+import { getUserTemplatesDir } from "./templates.mjs";
 
 /**
  * Build a template ID from a project type string.
@@ -164,14 +155,15 @@ export function buildDetectionRules(record) {
  * Save a generated template to the user templates directory.
  * Also updates _index.md.
  */
-export async function saveUserTemplate(templateId, content, meta) {
-  await mkdir(USER_TEMPLATES_DIR, { recursive: true });
+export async function saveUserTemplate(templateId, content, meta, projectRoot) {
+  const userTemplatesDir = getUserTemplatesDir(projectRoot);
+  await mkdir(userTemplatesDir, { recursive: true });
 
-  const filePath = join(USER_TEMPLATES_DIR, `${templateId}.md`);
+  const filePath = join(userTemplatesDir, `${templateId}.md`);
   await writeFile(filePath, content, "utf8");
 
   // Update _index.md
-  await updateUserIndex(templateId, meta);
+  await updateUserIndex(templateId, meta, userTemplatesDir);
 
   return filePath;
 }
@@ -179,8 +171,8 @@ export async function saveUserTemplate(templateId, content, meta) {
 /**
  * Update (or create) the user templates _index.md with a new entry.
  */
-async function updateUserIndex(templateId, meta) {
-  const indexPath = join(USER_TEMPLATES_DIR, "_index.md");
+async function updateUserIndex(templateId, meta, userTemplatesDir) {
+  const indexPath = join(userTemplatesDir, "_index.md");
   let existing = await readFileIfExists(indexPath);
 
   if (!existing) {

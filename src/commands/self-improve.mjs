@@ -66,7 +66,7 @@ export async function selfImprove(flags) {
   // Step 4: Check feedback data for self-improvement insights
   console.log("\n---\nFeedback Analysis:\n");
 
-  const records = await loadAllFeedback();
+  const records = await loadAllFeedback(AGENT_RIG_ROOT);
   if (records.length === 0) {
     console.log("  No feedback data available yet.");
     console.log("  Run analyses to build feedback data for deeper insights.");

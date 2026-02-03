@@ -1,5 +1,6 @@
 import { join } from "node:path";
 import {
+  resolveProjectRoot,
   writeFileWithDir,
   fileExists,
   readFileIfExists,
@@ -25,11 +26,12 @@ const ATTRIBUTION = `
 `.trimStart();
 
 export async function init(flags) {
+  const projectRoot = resolveProjectRoot(flags);
   const templatesDir = getTemplatesDir();
 
   // --list: show available templates and exit
   if (flags.list) {
-    const templates = await listTemplates(templatesDir);
+    const templates = await listTemplates(templatesDir, projectRoot);
     if (templates.length === 0) {
       console.log("No templates found.");
       return;
@@ -38,7 +40,7 @@ export async function init(flags) {
     // Load quality scores (best-effort)
     let scores = new Map();
     try {
-      scores = await getAllTemplateScores();
+      scores = await getAllTemplateScores(projectRoot);
     } catch {
       // No feedback data yet
     }
@@ -61,14 +63,14 @@ export async function init(flags) {
   }
 
   // Load the template
-  const template = await findTemplate(flags.templateId, templatesDir);
+  const template = await findTemplate(flags.templateId, templatesDir, projectRoot);
   if (!template) {
     console.error(`Template not found: ${flags.templateId}`);
     console.error("Use --list to see available templates.");
     process.exit(1);
   }
 
-  const targetDir = flags.dir || process.cwd();
+  const targetDir = projectRoot;
   const dryRun = flags.dryRun;
   const force = flags.force;
 
@@ -209,7 +211,7 @@ export async function init(flags) {
       source: "cli",
       items: feedbackItems,
     });
-    await saveFeedback(record);
+    await saveFeedback(record, projectRoot);
   } catch {
     // Feedback capture is best-effort; never block the user
   }

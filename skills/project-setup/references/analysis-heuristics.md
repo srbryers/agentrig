@@ -201,7 +201,7 @@ Do NOT recommend:
 
 ## 9. Project-Type Template Matching
 
-Templates provide curated, domain-specific configurations for well-known project types. They are stored as markdown files in `~/.claude/skills/project-setup/templates/`.
+Templates provide curated, domain-specific configurations for well-known project types. They are stored as markdown files in `.claude/skills/project-setup/templates/`.
 
 ### Detection Fields
 

@@ -1,4 +1,5 @@
 import { loadAllFeedback, generateInsights } from "../feedback.mjs";
+import { resolveProjectRoot } from "../utils.mjs";
 
 /**
  * CLI command: agentic-rig insights
@@ -6,8 +7,9 @@ import { loadAllFeedback, generateInsights } from "../feedback.mjs";
  * Aggregates feedback data to show which heuristics and templates
  * produce high-value vs low-value recommendations.
  */
-export async function insights() {
-  const records = await loadAllFeedback();
+export async function insights(flags) {
+  const projectRoot = resolveProjectRoot(flags);
+  const records = await loadAllFeedback(projectRoot);
 
   if (records.length === 0) {
     console.log("No feedback data found.");

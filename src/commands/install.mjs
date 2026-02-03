@@ -1,6 +1,7 @@
 import { join } from "node:path";
 import { readdir } from "node:fs/promises";
 import {
+  resolveProjectRoot,
   getSkillsDir,
   getPackageBundledDir,
   copyDir,
@@ -10,7 +11,8 @@ import {
 } from "../utils.mjs";
 
 export async function install(flags) {
-  const skillsDir = getSkillsDir();
+  const projectRoot = resolveProjectRoot(flags);
+  const skillsDir = getSkillsDir(projectRoot);
   const bundledDir = getPackageBundledDir();
 
   // Read all subdirectories under the bundled skills/ dir

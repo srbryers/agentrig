@@ -1,4 +1,3 @@
-import { homedir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { stat, cp, readdir, mkdir, writeFile, readFile } from "node:fs/promises";
@@ -7,8 +6,12 @@ import { execFile } from "node:child_process";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-export function getSkillsDir() {
-  return join(homedir(), ".claude", "skills");
+export function resolveProjectRoot(flags) {
+  return flags?.dir || process.cwd();
+}
+
+export function getSkillsDir(projectRoot) {
+  return join(projectRoot, ".claude", "skills");
 }
 
 export function getPackageBundledDir() {

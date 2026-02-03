@@ -45,7 +45,7 @@ Usage:
   agentic-rig <command> [options]
 
 Commands:
-  install              Copy skill files to ~/.claude/skills/
+  install              Copy skill files to .claude/skills/
   uninstall            Remove installed skill files
   status               Show installation status and template quality
   init <template>      Generate Claude Code config from a project-type template
@@ -58,12 +58,12 @@ Init Options:
   --list               List available templates (with quality tiers)
   --force              Overwrite existing files without prompting
   --dry-run            Show what would be generated without writing
-  --dir <path>         Target directory (default: current directory)
 
 Generate-Template Options:
   --from-session <id>  Session ID to generate template from
 
 General Options:
+  --dir <path>         Project directory (default: current directory)
   --force, -f          Skip overwrite prompt during install
   --version            Print version
   --help               Print this help message
@@ -88,12 +88,12 @@ switch (command) {
   }
   case "uninstall": {
     const { uninstall } = await import("../src/commands/uninstall.mjs");
-    await uninstall();
+    await uninstall(flags);
     break;
   }
   case "status": {
     const { status } = await import("../src/commands/status.mjs");
-    await status();
+    await status(flags);
     break;
   }
   case "init": {
@@ -108,7 +108,7 @@ switch (command) {
   }
   case "insights": {
     const { insights } = await import("../src/commands/insights.mjs");
-    await insights();
+    await insights(flags);
     break;
   }
   case "generate-template": {

@@ -1,15 +1,12 @@
-import { homedir } from "node:os";
 import { join } from "node:path";
 import { readdir, readFile, mkdir, writeFile } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 
-const FEEDBACK_DIR = join(homedir(), ".claude", "agentic-rig", "feedback");
-
 /**
- * Returns the feedback storage directory path.
+ * Returns the feedback storage directory path for a project.
  */
-export function getFeedbackDir() {
-  return FEEDBACK_DIR;
+export function getFeedbackDir(projectRoot) {
+  return join(projectRoot, ".claude", "agentic-rig", "feedback");
 }
 
 /**
@@ -112,9 +109,10 @@ export function createFeedbackRecord(options) {
 /**
  * Save a feedback record to disk.
  */
-export async function saveFeedback(record) {
-  await mkdir(FEEDBACK_DIR, { recursive: true });
-  const filePath = join(FEEDBACK_DIR, `${record.sessionId}.json`);
+export async function saveFeedback(record, projectRoot) {
+  const feedbackDir = getFeedbackDir(projectRoot);
+  await mkdir(feedbackDir, { recursive: true });
+  const filePath = join(feedbackDir, `${record.sessionId}.json`);
   await writeFile(filePath, JSON.stringify(record, null, 2), "utf8");
   return filePath;
 }
@@ -122,8 +120,9 @@ export async function saveFeedback(record) {
 /**
  * Load a single feedback record by session ID.
  */
-export async function loadFeedback(sessionId) {
-  const filePath = join(FEEDBACK_DIR, `${sessionId}.json`);
+export async function loadFeedback(sessionId, projectRoot) {
+  const feedbackDir = getFeedbackDir(projectRoot);
+  const filePath = join(feedbackDir, `${sessionId}.json`);
   try {
     const content = await readFile(filePath, "utf8");
     return JSON.parse(content);
@@ -136,10 +135,11 @@ export async function loadFeedback(sessionId) {
  * Load all feedback records from disk.
  * Returns array sorted by timestamp (oldest first).
  */
-export async function loadAllFeedback() {
+export async function loadAllFeedback(projectRoot) {
+  const feedbackDir = getFeedbackDir(projectRoot);
   let files;
   try {
-    files = await readdir(FEEDBACK_DIR);
+    files = await readdir(feedbackDir);
   } catch {
     return [];
   }
@@ -148,7 +148,7 @@ export async function loadAllFeedback() {
   for (const file of files) {
     if (!file.endsWith(".json")) continue;
     try {
-      const content = await readFile(join(FEEDBACK_DIR, file), "utf8");
+      const content = await readFile(join(feedbackDir, file), "utf8");
       records.push(JSON.parse(content));
     } catch {
       // Skip corrupted files
@@ -321,8 +321,8 @@ export function generateInsights(records) {
  * List all feedback session IDs with basic metadata.
  * Returns array of { sessionId, timestamp, templateId, approvalRate, source }.
  */
-export async function listFeedbackSessions() {
-  const records = await loadAllFeedback();
+export async function listFeedbackSessions(projectRoot) {
+  const records = await loadAllFeedback(projectRoot);
   return records.map((r) => ({
     sessionId: r.sessionId,
     timestamp: r.timestamp,

@@ -65,8 +65,8 @@ export function formatScoreDisplay(score) {
  * Get quality scores for all templates that have feedback data.
  * Returns Map<templateId, score>.
  */
-export async function getAllTemplateScores() {
-  const records = await loadAllFeedback();
+export async function getAllTemplateScores(projectRoot) {
+  const records = await loadAllFeedback(projectRoot);
   const agg = aggregateFeedback(records);
   const scores = new Map();
 

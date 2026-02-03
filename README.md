@@ -17,7 +17,7 @@ npx agentic-rig install
 ## Usage
 
 ```
-agentic-rig install              # Copy skill files to ~/.claude/skills/
+agentic-rig install              # Copy skill files to .claude/skills/
 agentic-rig uninstall            # Remove installed skill files
 agentic-rig status               # Show installation status
 agentic-rig init <template>      # Generate config from a project-type template
@@ -54,7 +54,7 @@ agentic-rig discover shopify     # Search for Shopify skills
 
 ### `/project-setup` skill
 
-`agentic-rig install` copies bundled skills into `~/.claude/skills/`. This includes:
+`agentic-rig install` copies bundled skills into `.claude/skills/` (project-local). This includes:
 
 - **project-setup** — the main analysis and configuration skill
 - **find-skills** — a meta-skill for searching community skills

@@ -1,6 +1,6 @@
 {
   "name": "agentic-rig",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Rig up your project for agentic coding. Analyzes any codebase and generates Claude Code configuration.",
   "repository": {
     "type": "git",

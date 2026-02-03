@@ -5,7 +5,7 @@ import {
   buildDetectionRules,
   saveUserTemplate,
 } from "../template-generator.mjs";
-import { promptYesNo } from "../utils.mjs";
+import { resolveProjectRoot, promptYesNo } from "../utils.mjs";
 
 /**
  * CLI command: agentic-rig generate-template --from-session <id>
@@ -13,11 +13,12 @@ import { promptYesNo } from "../utils.mjs";
  * Creates a reusable template from a successful analysis session's feedback data.
  */
 export async function generateTemplate(flags) {
+  const projectRoot = resolveProjectRoot(flags);
   const sessionId = flags.fromSession;
 
   // If no session specified, list available sessions
   if (!sessionId) {
-    const sessions = await listFeedbackSessions();
+    const sessions = await listFeedbackSessions(projectRoot);
     if (sessions.length === 0) {
       console.log("No feedback sessions found.");
       console.log("Run `agentic-rig init <template>` or `/project-setup` first to generate feedback data.");
@@ -39,7 +40,7 @@ export async function generateTemplate(flags) {
   }
 
   // Load the session
-  const record = await loadFeedback(sessionId);
+  const record = await loadFeedback(sessionId, projectRoot);
   if (!record) {
     console.error(`Session not found: ${sessionId}`);
     console.error("Use `agentic-rig generate-template` without flags to list available sessions.");
@@ -108,7 +109,7 @@ export async function generateTemplate(flags) {
   });
 
   // Save the template
-  const filePath = await saveUserTemplate(templateId, templateContent, meta);
+  const filePath = await saveUserTemplate(templateId, templateContent, meta, projectRoot);
 
   console.log(`\nTemplate saved to: ${filePath}`);
   console.log(`\nUse it with: agentic-rig init ${templateId}`);

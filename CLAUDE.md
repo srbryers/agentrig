@@ -1,4 +1,4 @@
-# agentic-rig (v0.5.0)
+# agentic-rig (v0.6.0)
 
 ## Project Overview
 
@@ -20,7 +20,7 @@ npm link
 # Run CLI directly during development
 node bin/cli.mjs --help
 
-# Install bundled skills to ~/.claude/skills/
+# Install bundled skills to .claude/skills/ (project-local)
 agentic-rig install
 
 # Initialize a project from a template
@@ -80,7 +80,7 @@ npm publish --access public
 │       ├── generate-template.mjs # Create template from feedback session
 │       ├── init.mjs              # Generate config from templates (with feedback capture)
 │       ├── insights.mjs          # Show heuristic/template quality from feedback
-│       ├── install.mjs           # Copy bundled skills to ~/.claude/skills/
+│       ├── install.mjs           # Copy bundled skills to .claude/skills/
 │       ├── self-improve.mjs      # Analyze agentic-rig itself
 │       ├── status.mjs            # Show installation status and quality tiers
 │       └── uninstall.mjs         # Remove installed skills
@@ -107,22 +107,26 @@ npm publish --access public
 └── LICENSE
 ```
 
-## User Data Directory
+## Project-Local Data
 
-Feedback and user-generated templates are stored outside the project:
+All data is stored within the project's `.claude/` directory:
 
 ```
-~/.claude/agentic-rig/
-├── feedback/              # Session JSON files (append-only)
-│   └── {sessionId}.json   # One file per analysis session
-└── templates/             # User-generated templates
-    ├── _index.md          # User template registry
-    └── {template-id}.md   # Generated template files
+.claude/
+├── skills/                # Installed skill files (via agentic-rig install)
+├── agentic-rig/
+│   ├── feedback/          # Session JSON files (append-only)
+│   │   └── {sessionId}.json
+│   └── templates/         # User-generated templates
+│       ├── _index.md      # User template registry
+│       └── {template-id}.md
+├── settings.json          # Hooks and permissions
+└── .mcp.json              # MCP server configs
 ```
 
 ## Template Anatomy
 
-Templates are `.md` files in `skills/project-setup/templates/` (bundled) or `~/.claude/agentic-rig/templates/` (user-generated) with this structure:
+Templates are `.md` files in `skills/project-setup/templates/` (bundled) or `.claude/agentic-rig/templates/` (user-generated) with this structure:
 
 ```
 ---
@@ -236,7 +240,7 @@ When modifying `src/templates.mjs`, test against all four bundled templates to v
 
 ## Releases
 
-- Version is tracked in `package.json` (`"version": "0.5.0"`)
+- Version is tracked in `package.json` (`"version": "0.6.0"`)
 - **Publishing is done via GitHub Actions workflow** — never run `npm publish` manually
 - To release: bump version in `package.json`, commit, push, then create a **GitHub Release** (via `gh release create v0.x.x --generate-notes`). The workflow triggers on release publish.
 - The `"files"` field limits the published package to `bin/`, `src/`, and `skills/`
