@@ -89,6 +89,7 @@ shopify theme check --auto-correct
 - Never expose API keys in theme Liquid files
 - Use `{{ content | escape }}` for any dynamic content output
 - Do not store customer PII in metafields rendered client-side
+- Avoid `eval()` and inline event handlers (`onclick`, `onload`) in custom JavaScript — use `addEventListener` instead
 
 ## hooks
 
@@ -101,6 +102,14 @@ shopify theme check --auto-correct
     }
   ],
   "PreToolUse": [
+    {
+      "matcher": "Write|Edit",
+      "command": "case \"$CLAUDE_FILE_PATHS\" in *.env*) echo 'BLOCKED: Do not edit .env files — they may contain API keys or store credentials' && exit 2;; esac"
+    },
+    {
+      "matcher": "Write|Edit",
+      "command": "case \"$CLAUDE_FILE_PATHS\" in *package-lock.json|*yarn.lock|*pnpm-lock.yaml) echo 'BLOCKED: Lock files should only be modified by the package manager.' && exit 2;; esac"
+    },
     {
       "matcher": "Write|Edit",
       "command": "case \"$CLAUDE_FILE_PATHS\" in *.min.js|*.min.css|assets/*.generated.*) echo 'BLOCKED: Do not edit minified or generated asset files' && exit 2;; esac"

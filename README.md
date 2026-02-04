@@ -87,6 +87,22 @@ Search the community skill registry from the command line. Runs `npx skills find
 agentic-rig discover react
 ```
 
+## Secure by Default
+
+agentic-rig generates guardrails, not just productivity config. Security is built into every layer.
+
+**Guard hooks** — PreToolUse hooks block edits to `.env` files (secrets), lock files (dependency integrity), migration directories (tool-generated), and build artifacts (compiled output). The AI agent physically cannot modify these files.
+
+**Security-aware analysis** — The analysis phase detects auth, payment, secrets, and user-data patterns. When found, generated configs include security-specific CLAUDE.md guidance and a security-reviewer subagent.
+
+**Domain-specific security knowledge** — Templates encode framework-level security practices: webhook signature validation (Shopify), output escaping (Liquid), CORS configuration (FastAPI), server-side token handling (Next.js).
+
+**Continuous improvement** — The feedback loop tracks which guardrails users keep or skip. `self-improve` uses this data to evolve security recommendations based on real usage.
+
+**Human-in-the-loop** — every recommendation is presented for review; nothing is applied silently. Use `--dry-run` to inspect everything before any files are written.
+
+> agentic-rig is not a replacement for security audits, penetration testing, or professional security review. It generates sensible defaults that reduce the surface area for common mistakes.
+
 ## Available Templates
 
 | Template | Description |

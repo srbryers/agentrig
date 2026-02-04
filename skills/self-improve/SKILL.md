@@ -63,7 +63,21 @@ Read all template files in `skills/project-setup/templates/`:
 - Cross-reference with feedback data per template
 - Identify templates with no usage data
 
-### Step 1.6: Review agentic-rig's Own CLAUDE.md
+### Step 1.6: Security Coverage Audit
+
+For each bundled template in `skills/project-setup/templates/`, check that all four guard types are present:
+- `.env` PreToolUse guard hook (blocks secret file edits)
+- Lock file PreToolUse guard hook (blocks dependency lock file edits)
+- Build artifact PreToolUse guard hook (blocks compiled/generated output edits)
+- `### Security Notes` section in the `claude_md` content
+
+Also check:
+- Security-reviewer agent recommendation (or equivalent domain-specific reviewer)
+- Cross-reference with feedback data: are security hooks being skipped at higher rates than non-security hooks?
+
+Record gaps for the Phase 2 report.
+
+### Step 1.7: Review agentic-rig's Own CLAUDE.md
 
 Read `CLAUDE.md` in the agentic-rig repo root:
 - Compare against what the analysis heuristics would generate
@@ -109,6 +123,14 @@ After analysis, present findings and proposed changes:
 | D2 | Project Structure | Add new files |
 | ... | ... | ... |
 
+### Security Coverage
+
+| # | Template | Gap | Proposed Fix |
+|---|---------|-----|-------------|
+| SEC1 | python-fastapi | Missing lock file guard | Add poetry.lock/requirements.txt guard |
+| SEC2 | [template] | No Security Notes section | Add Security Notes to claude_md |
+| ... | ... | ... | ... |
+
 ### Workflow Improvements
 
 | # | Area | Suggestion |
@@ -147,6 +169,11 @@ For each approved change:
 ### CLAUDE.md Updates (D# items)
 - Edit `CLAUDE.md` in the agentic-rig repo root
 - Merge new sections, update outdated info
+
+### Security Coverage (SEC# items)
+- For missing guards: add the appropriate PreToolUse hook to the template's `hooks` section
+- For missing Security Notes: add a `### Security Notes` subsection to the template's `claude_md` section
+- For missing security agents: add a security-reviewer or equivalent agent to the template
 
 ### Workflow Improvements (W# items)
 - Edit `skills/project-setup/SKILL.md`

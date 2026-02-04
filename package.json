@@ -25,6 +25,8 @@
     "agentic",
     "coding",
     "setup",
+    "security",
+    "guardrails",
     "cli"
   ]
 }

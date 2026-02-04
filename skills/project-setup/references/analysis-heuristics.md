@@ -82,7 +82,7 @@ Subagents are specialized Claude instances for focused tasks.
 | Signal | Agent Name | Agent File | Model | Tools | Description | When to Recommend |
 |--------|-----------|------------|-------|-------|-------------|-------------------|
 | Codebase >500 files | code-reviewer | `code-reviewer.md` | sonnet | Read, Grep, Glob | Reviews code changes for quality, patterns, and potential issues | Large codebases where review is valuable |
-| Auth/security code detected (auth/, security/, login patterns) | security-reviewer | `security-reviewer.md` | sonnet | Read, Grep, Glob | Reviews changes for security vulnerabilities (OWASP Top 10, auth flaws) | Security-sensitive code detected |
+| API routes, database/ORM, auth patterns, or user data handling | security-reviewer | `security-reviewer.md` | sonnet | Read, Grep, Glob | Reviews changes for security vulnerabilities (OWASP Top 10, auth flaws) | Any project with network-accessible endpoints or user data |
 | Frontend with component library | ui-reviewer | `ui-reviewer.md` | sonnet | Read, Grep, Glob | Reviews UI components for accessibility, consistency, and best practices | Frontend project with 10+ components |
 | Test directory with <50% coverage or sparse tests | test-writer | `test-writer.md` | sonnet | Read, Write, Grep, Glob | Generates comprehensive tests for untested modules | Test framework exists but coverage appears low |
 | Monorepo with 3+ packages | dependency-checker | `dependency-checker.md` | haiku | Read, Grep, Glob | Checks for dependency conflicts and version mismatches across packages | Monorepo detected |
@@ -129,12 +129,13 @@ Determine which sections to include in the generated CLAUDE.md based on signals.
 | Git repo | Version Control | Recommended | Branch strategy if detectable, commit conventions |
 | `.env.example` or environment vars | Environment Setup | Recommended | Required env vars, setup steps |
 | Docker/containers detected | Deployment | Optional | Docker commands, deployment notes |
-| Auth/security patterns | Security Notes | Recommended | Auth approach, sensitive areas to be careful with |
+| Auth/security patterns, API routes, database/ORM, or payment patterns | Security Notes | Required | Auth approach, sensitive areas to be careful with |
 | API layer detected | API Conventions | Optional | Endpoint patterns, response format, error handling |
 | Multiple languages or workspaces | Monorepo Guide | Required (monorepo) | Workspace layout, cross-package dependencies |
 | Agent SDK usage | Agent SDK Notes | Optional | Agent patterns, custom tool definitions |
 | CI/CD detected | CI/CD | Optional | Pipeline structure, required checks |
 | Package manager detected | Dependencies | Recommended | How to install, add, update dependencies |
+| `.env` files exist without `.gitignore` coverage | Secrets Management | Required | Add `.env` to `.gitignore`, use `.env.example` for documenting required vars |
 
 ### Priority Levels
 - **Required** — Always include when signal is detected
@@ -174,12 +175,13 @@ When many recommendations are possible, prioritize by impact:
 6. Test generation skill
 7. MCP servers for detected services
 8. Code review agent (large projects)
+9. Security-reviewer agent (any project with network-accessible endpoints or user data)
 
 ### Low Priority (recommend for large/complex projects)
-9. Specialized agents (security, UI)
-10. Documentation skills
-11. CI/CD skills
-12. Notification hooks
+10. Specialized agents (UI reviewer)
+11. Documentation skills
+12. CI/CD skills
+13. Notification hooks
 
 If the total recommendation count exceeds 15 items, consider grouping lower-priority items as "optional additions" in the report.
 

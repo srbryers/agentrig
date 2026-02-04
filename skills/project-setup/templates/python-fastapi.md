@@ -148,6 +148,9 @@ async def get_user(
 - Hash passwords with `bcrypt` or `passlib` — never store plaintext
 - Validate all input through Pydantic models — never trust raw request data
 - Use CORS middleware configured for specific origins, not `*`
+- Add rate limiting middleware on auth and public-facing endpoints (e.g., `slowapi` or custom middleware)
+- Serve production traffic behind a reverse proxy (nginx, Caddy) with TLS termination — do not expose bare uvicorn to the internet
+- SQLAlchemy parameterizes queries by default, but never use f-strings or string concatenation to build raw SQL — always use `text()` with bound parameters
 
 ### Testing
 
@@ -185,6 +188,14 @@ Use `httpx.AsyncClient` with `ASGITransport` for async test client. Override dep
     {
       "matcher": "Write|Edit",
       "command": "case \"$CLAUDE_FILE_PATHS\" in *.env*) echo 'BLOCKED: Do not edit .env files — they contain secrets and database credentials' && exit 2;; esac"
+    },
+    {
+      "matcher": "Write|Edit",
+      "command": "case \"$CLAUDE_FILE_PATHS\" in *poetry.lock|*Pipfile.lock) echo 'BLOCKED: Lock files should only be modified by the package manager.' && exit 2;; esac"
+    },
+    {
+      "matcher": "Write|Edit",
+      "command": "case \"$CLAUDE_FILE_PATHS\" in __pycache__/*|*.pyc|dist/*|*.egg-info/*) echo 'BLOCKED: Do not edit build artifacts — these are generated files.' && exit 2;; esac"
     }
   ]
 }

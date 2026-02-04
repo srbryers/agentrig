@@ -1,4 +1,4 @@
-import { execCommand } from "../utils.mjs";
+import { execCommand, sanitizeShellArg } from "../utils.mjs";
 
 export async function discover(query) {
   if (!query) {
@@ -7,8 +7,7 @@ export async function discover(query) {
     process.exit(1);
   }
 
-  // Sanitize query: strip shell metacharacters
-  const sanitized = query.replace(/[;&|`$(){}[\]<>!#\\'"]/g, "").trim();
+  const sanitized = sanitizeShellArg(query);
   if (!sanitized) {
     console.error("Invalid query.");
     process.exit(1);

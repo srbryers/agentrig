@@ -1,6 +1,6 @@
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import { analyzeProject, generateClaudeMd, diffStrings } from "../analyze.mjs";
 import { loadAllFeedback, generateInsights } from "../feedback.mjs";
 import { readFileIfExists } from "../utils.mjs";
@@ -121,6 +121,34 @@ export async function selfImprove(flags) {
     if (!scripts.includes("lint")) {
       suggestions.push("Add a `lint` script to package.json");
     }
+  }
+
+  // Check template security coverage
+  const templatesDir = join(AGENT_RIG_ROOT, "skills", "project-setup", "templates");
+  try {
+    const templateFiles = (await readdir(templatesDir)).filter(
+      (f) => f.endsWith(".md") && f !== "_index.md"
+    );
+    for (const file of templateFiles) {
+      const content = await readFile(join(templatesDir, file), "utf8");
+      if (!content.includes("Security Notes")) {
+        suggestions.push(`Template ${file} is missing a "Security Notes" section`);
+      }
+      const hasEnvGuard = content.includes(".env") && content.includes("BLOCKED") && content.includes("exit 2");
+      if (!hasEnvGuard) {
+        suggestions.push(`Template ${file} is missing a .env PreToolUse guard hook`);
+      }
+      const hasLockGuard = content.includes("lock") && content.includes("package manager") && content.includes("exit 2");
+      if (!hasLockGuard) {
+        suggestions.push(`Template ${file} is missing a lock file PreToolUse guard hook`);
+      }
+      const hasBuildGuard = (content.includes("dist/") || content.includes("build/") || content.includes("min.js")) && content.includes("BLOCKED") && content.includes("exit 2");
+      if (!hasBuildGuard) {
+        suggestions.push(`Template ${file} is missing a build artifact PreToolUse guard hook`);
+      }
+    }
+  } catch {
+    // Templates directory may not exist — skip silently
   }
 
   if (suggestions.length === 0) {

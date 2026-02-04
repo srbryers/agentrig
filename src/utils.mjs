@@ -127,14 +127,29 @@ export function mergeMcpJson(existing, newServers) {
   return JSON.stringify(mcp, null, 2);
 }
 
+/**
+ * Strips shell metacharacters from a string to prevent injection when
+ * passed as an argument to execCommand (which runs with shell: true).
+ * Callers MUST sanitize all user-provided values before passing them
+ * to execCommand.
+ */
+export function sanitizeShellArg(value) {
+  return value.replace(/[;&|`$(){}[\]<>!#\\'"]/g, "").trim();
+}
+
+/**
+ * Executes a command via child_process.execFile with shell: true.
+ * All arguments derived from user input MUST be sanitized with
+ * sanitizeShellArg() before being passed here.
+ */
 export function execCommand(command, args, options = {}) {
   return new Promise((resolve) => {
     execFile(command, args, {
       timeout: options.timeout || 30000,
       maxBuffer: 1024 * 1024,
       // shell: true is required for Windows where npx is a .cmd shim
-      // that execFile cannot resolve without a shell. Input sanitization
-      // is handled by callers (e.g., discover.mjs strips metacharacters).
+      // that execFile cannot resolve without a shell. Callers must
+      // sanitize user-provided values with sanitizeShellArg() first.
       shell: true,
     }, (error, stdout, stderr) => {
       resolve({
